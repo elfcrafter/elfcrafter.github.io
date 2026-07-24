@@ -10,6 +10,7 @@ Popitka dva
   <title>🌿 Мастерская Эльфа</title>
   <link rel="manifest" href="data:application/json;base64,ewogICJuYW1lIjogItCc0LDRgdGC0LXRgNGB0LrQsNGPINCt0LvRjNGE0LAiLAogICJzaG9ydF9uYW1lIjogItCt0LvRjNGEIiwKICAic3RhcnRfdXJsIjogIi4iLAogICJkaXNwbGF5IjogInN0YW5kYWxvbmUiLAogICJiYWNrZ3JvdW5kX2NvbG9yIjogIiMwYTFhMmUiLAogICJ0aGVtZV9jb2xvciI6ICIjMGExYTJlIiwKICAiaWNvbnMiOiBbCiAgICB7CiAgICAgICJzcmMiOiAiZGF0YTppbWFnZS9zdmcreG1sLCUzQ3N2ZyUyMHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyclMjB2aWV3Qm94PScwIDAgMTAwIDEwMCclM0UlM0NjaXJjbGUlMjBjeD0nNTAnMjBjeT0nNTAnMjByPSc0OCclMjBmaWxsPSclMjMwYTFhMmUnMjBzdHJva2U9JyUyMzJkMmQ0NCclMjBzdHJva2Utd2lkdGg9JzQnLyUzRSUzQ3BhdGglMjBkPSdNMzAlMjA3MGwxMC0yMGgxMGwxMCUyMDIwSDQ1TTMwJTIwNDhsMTAtMjhoMTVsMTAlMjAyOGgtMTVsLTUtMTVINDBsLTUlMjAxNUgzMHonJTIwZmlsbD0nJTIzZDJhYjY3JyUyMHN0cm9rZT0nJTIzZDJhYjY3JyUyMHN0cm9rZS13aWR0aD0nMicvJTNFJTNDY2lyY2xlJTIwY3g9JzY1JTIwY3k9JzM1JTIwcj0nMTAnMjBmaWxsPSclMjNmZjU1MzMnLyUzRSUzQy9zdmclM0UiLAogICAgICAic2l6ZXMiOiAiMTkyeDE5MiIsCiAgICAgICJ0eXBlIjogImltYWdlL3N2Zy94bWwiCiAgICB9CiAgXQp9">
   <style>
+    /* Все стили точно такие же, как в предыдущем рабочем варианте, плюс обновления для заметок-плиток и круга */
     * { margin:0; padding:0; box-sizing:border-box; }
     body {
       background: linear-gradient(135deg, #0a1a2e 0%, #1a3a4e 100%);
@@ -203,6 +204,7 @@ Popitka dva
 </head>
 <body>
 <div class="app" id="app">
+  <!-- Экран входа -->
   <div id="authScreen" class="screen active">
     <h2>📔 Мастерская 🪶<br>🌿 Эльфа 🍁</h2>
     <input type="password" id="pinInput" class="pin-input" maxlength="4" placeholder="····">
@@ -210,8 +212,9 @@ Popitka dva
     <button class="btn btn-outline" id="resetPinBtn">Сменить пин</button>
     <p style="color:#7a8a9a; text-align:center; margin-top:12px;">Пин по умолчанию 1234</p>
   </div>
+  <!-- Приветствие -->
   <div id="greetingScreen" class="screen"><div class="greeting" id="greetingText"></div></div>
-
+  <!-- Мандала -->
   <div id="mainScreen" class="screen">
     <div class="mandala-grid">
       <div class="mandala-petal" id="goCalendar" style="grid-column:2; grid-row:1;"><span class="icon">📅</span> Календарь</div>
@@ -224,12 +227,99 @@ Popitka dva
     </div>
   </div>
 
-  <!-- Остальные экраны (публикация, календарь, заметки, финансы, соцсети, галерея, настройки) аналогичны предыдущему коду, но с исправлениями. -->
-  <!-- Вставлю их в скрипте динамически для краткости, но лучше вставить статично. -->
+  <!-- Экран публикации -->
+  <div id="publishScreen" class="screen">
+    <button class="btn btn-outline" id="backFromPublish" style="width:auto; margin-bottom:12px;">← Назад</button>
+    <h2>📢 Новая публикация</h2>
+    <input type="text" id="postTitle" placeholder="Название изделия">
+    <textarea id="postDesc" placeholder="Описание..." rows="3"></textarea>
+    <input type="number" id="postPrice" placeholder="Цена (₽)">
+    <input type="text" id="postTags" placeholder="Хештеги через запятую (без #)">
+    <label>📎 Фото (до 8):</label>
+    <input type="file" id="photoInput" accept="image/*" multiple style="display:none;">
+    <button class="btn btn-outline" onclick="document.getElementById('photoInput').click()" style="margin-top:4px;">Выбрать фото</button>
+    <div class="photo-preview" id="photoPreview"></div>
+    <div class="platform-list">
+      <p style="color:#b8a68b;">Площадки:</p>
+      <div id="platformCheckboxes"></div>
+    </div>
+    <button class="btn" id="startPublishBtn">🚀 Начать рассылку</button>
+    <div id="publishProgress" class="progress" style="display:none;"></div>
+  </div>
+
+  <!-- Экран календаря -->
+  <div id="calendarScreen" class="screen">
+    <button class="btn btn-outline" id="backFromCalendar" style="width:auto; margin-bottom:12px;">← Назад</button>
+    <h2>📅 Календарь</h2>
+    <div style="display:flex; justify-content:space-between; margin-bottom:10px;">
+      <button class="btn btn-outline" id="prevMonth" style="width:auto;">◀</button>
+      <span id="monthLabel" style="font-weight:700;"></span>
+      <button class="btn btn-outline" id="nextMonth" style="width:auto;">▶</button>
+    </div>
+    <div id="calendarDays" style="text-align:center;"></div>
+    <div id="eventInput" style="display:none; margin-top:8px;">
+      <input type="text" id="eventTitle" placeholder="Название события">
+      <button class="btn" id="saveEventBtn">Сохранить</button>
+    </div>
+    <h3 style="margin-top:16px;">Ближайшие события</h3>
+    <div class="event-list" id="eventList"></div>
+  </div>
+
+  <!-- Экран заметок -->
+  <div id="notesScreen" class="screen">
+    <button class="btn btn-outline" id="backFromNotes" style="width:auto; margin-bottom:12px;">← Назад</button>
+    <h2>📝 Планы на неделю</h2>
+    <div id="notesContainer"></div>
+  </div>
+
+  <!-- Экран финансов -->
+  <div id="financeScreen" class="screen">
+    <button class="btn btn-outline" id="backFromFinance" style="width:auto; margin-bottom:12px;">← Назад</button>
+    <h2>💰 Финансы</h2>
+    <div class="finance-panel">
+      <div class="category-tree" id="categoryTree"></div>
+      <div class="item-table" id="itemTable"></div>
+    </div>
+    <div style="margin-top:12px;">
+      <input type="text" id="newItemName" placeholder="Название изделия">
+      <input type="number" id="newItemCost" placeholder="Затраты (₽)">
+      <input type="number" id="newItemPrice" placeholder="Прибыль (₽)">
+      <input type="file" id="newItemPhoto" accept="image/*" style="display:none;">
+      <button class="btn btn-outline" onclick="document.getElementById('newItemPhoto').click()">Фото</button>
+      <button class="btn" id="addItemBtn">Добавить в категорию</button>
+    </div>
+  </div>
+
+  <!-- Экран соцсетей -->
+  <div id="socialScreen" class="screen">
+    <button class="btn btn-outline" id="backFromSocial" style="width:auto; margin-bottom:12px;">← Назад</button>
+    <h2>💬 Мои соцсети</h2>
+    <div id="socialList"></div>
+  </div>
+
+  <!-- Экран галереи -->
+  <div id="galleryScreen" class="screen">
+    <button class="btn btn-outline" id="backFromGallery" style="width:auto; margin-bottom:12px;">← Назад</button>
+    <h2>🖼️ Галерея</h2>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+
+  <!-- Экран настроек -->
+  <div id="settingsScreen" class="screen">
+    <button class="btn btn-outline" id="backFromSettings" style="width:auto; margin-bottom:12px;">← Назад</button>
+    <h2>⚙️ Настройки</h2>
+    <button class="btn btn-outline" id="changePinBtn">Сменить пин-код</button>
+    <p style="color:#9c8a78; margin-top:12px;">Добавление площадок:</p>
+    <div style="display:flex; gap:8px;">
+      <input type="text" id="newPlatformName" placeholder="Название">
+      <input type="text" id="newPlatformUrl" placeholder="Ссылка">
+      <button class="btn" id="addPlatformBtn" style="width:auto;">+</button>
+    </div>
+    <div id="customPlatforms" style="margin-top:12px;"></div>
+  </div>
 </div>
 
 <script>
-  // Основной скрипт с исправленным календарём, заметками-плитками и деревом финансов.
   (function() {
     const STORAGE = 'craftsister_v4';
     let state = {
@@ -280,7 +370,6 @@ Popitka dva
     }
     function save() { localStorage.setItem(STORAGE, JSON.stringify(state)); }
 
-    // Экраны
     const screens = {
       auth: document.getElementById('authScreen'), greeting: document.getElementById('greetingScreen'), main: document.getElementById('mainScreen'),
       publish: document.getElementById('publishScreen'), calendar: document.getElementById('calendarScreen'), notes: document.getElementById('notesScreen'),
@@ -292,7 +381,7 @@ Popitka dva
       screens[id].classList.add('active');
     }
 
-    // Обработчики навигации
+    // Пин-код
     document.getElementById('loginBtn').addEventListener('click', () => {
       if (document.getElementById('pinInput').value === state.pin) {
         const phrases = ['Привет! Что нового ты придумал?','О, новые красивые штуки!','Не волнуйся, мы найдём тебе заказы.','Не бойся, я с тобой.','Рисуй чаще, и чаща нарисует тебе.','С возвращением, мастер Эльфа!','Улыбнись, твои работы этого достойны.'];
@@ -303,6 +392,8 @@ Popitka dva
     document.getElementById('resetPinBtn').addEventListener('click', () => {
       const p = prompt('Новый 4-значный пин:'); if (p && /^\d{4}$/.test(p)) { state.pin = p; save(); alert('Готово!'); }
     });
+
+    // Навигация
     document.getElementById('goPublish').addEventListener('click', () => { renderPlatforms(); show('publish'); });
     document.getElementById('goCalendar').addEventListener('click', () => { renderCalendar(); show('calendar'); });
     document.getElementById('goNotes').addEventListener('click', () => { renderNotes(); show('notes'); });
