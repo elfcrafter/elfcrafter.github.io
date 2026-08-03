@@ -8,305 +8,104 @@
   <title>Мастерская Эльфа</title>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-    body {
-      font-family: -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-      background: #0a0e1a;
-      color: #d0d9e6;
-      min-height: 100vh;
-    }
-    .app-container {
-      width: 100%;
-      min-height: 100vh;
-      background: radial-gradient(ellipse at 30% 20%, #0f1a2e, #080c18);
-    }
-    .screen {
-      display: none;
-      width: 100%;
-      min-height: 100vh;
-      padding: 20px 16px;
-    }
-    .screen.active {
-      display: flex;
-      flex-direction: column;
-    }
-    /* PIN */
-    #pinScreen {
-      justify-content: center;
-      align-items: center;
-      background: radial-gradient(ellipse at center, #0f1a2e, #050810);
-    }
-    .pin-logo { font-size: 42px; margin-bottom: 8px; }
-    .pin-logo-text {
-      font-size: 22px; font-weight: 300; color: #8ab4d6;
-      letter-spacing: 4px; margin-bottom: 30px;
-    }
-    .pin-dots { display: flex; gap: 20px; margin-bottom: 32px; }
-    .pin-dot {
-      width: 16px; height: 16px; border-radius: 50%;
-      border: 2px solid #3a5a7a; transition: 0.2s;
-    }
-    .pin-dot.filled { background: #6a9ac8; border-color: #6a9ac8; }
-    .pin-keypad { display: grid; grid-template-columns: repeat(3, 70px); gap: 14px; margin-bottom: 20px; }
-    .pin-key {
-      width: 70px; height: 70px; border-radius: 6px;
-      border: 1px solid rgba(60,100,150,0.3);
-      background: rgba(20,40,70,0.5); color: #b0cce6;
-      font-size: 26px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-    }
-    .pin-key:active { background: rgba(60,120,200,0.3); }
-    .pin-key.empty { background: transparent; border: none; pointer-events: none; }
-
-    /* MANDALA – прямоугольные плитки */
-    .mandala-grid {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      grid-auto-rows: auto;
-      gap: 10px;
-      max-width: 400px;
-      margin: 0 auto;
-    }
-    .mandala-item {
-      aspect-ratio: 1 / 1;
-      background: rgba(20,45,80,0.4);
-      border-radius: 6px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      border: 1px solid rgba(60,120,200,0.15);
-      cursor: pointer;
-      transition: background 0.2s;
-      padding: 8px;
-    }
-    .mandala-item:active { background: rgba(40,80,140,0.3); }
-    .mandala-item .icon { font-size: 28px; margin-bottom: 4px; }
-    .mandala-item .label { font-size: 11px; color: #7a9aba; font-weight: 400; text-align: center; }
-    .mandala-center {
-      grid-column: 2; grid-row: 2;
-      aspect-ratio: 1 / 1;
-      background: radial-gradient(circle, #1a3a5a, #0f1a2e);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 36px;
-      color: #8ab4d6;
-      border: 1px solid rgba(80,160,240,0.3);
-      cursor: pointer;
-    }
-    .mandala-center:active { background: rgba(60,150,255,0.2); }
-
-    /* SCREEN HEADER */
-    .screen-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 16px;
-      border-bottom: 1px solid rgba(40,70,120,0.25);
-      padding-bottom: 12px;
-    }
-    .screen-header .back-btn {
-      background: none; border: none; color: #6a8aaa;
-      font-size: 24px; cursor: pointer;
-    }
-    .screen-header .title { font-size: 18px; font-weight: 600; color: #c8dcee; }
-
-    /* FORMS */
-    .form-group { margin-bottom: 16px; }
-    .form-group label { display: block; font-size: 12px; color: #6a8aaa; margin-bottom: 4px; }
-    .form-group input, .form-group textarea {
-      width: 100%; padding: 12px;
-      background: rgba(15,30,55,0.7);
-      border: 1px solid rgba(50,90,140,0.2);
-      border-radius: 6px;
-      color: #d0d9e6; font-size: 15px; outline: none;
-      font-family: inherit;
-    }
-    .form-group textarea { resize: vertical; min-height: 70px; }
-    .checkbox-grid { display: flex; flex-wrap: wrap; gap: 8px; }
-    .checkbox-item {
-      display: flex; align-items: center; gap: 6px;
-      background: rgba(20,45,80,0.3); padding: 6px 12px;
-      border-radius: 20px; border: 1px solid rgba(50,90,140,0.15);
-      font-size: 13px; color: #8aabca; cursor: pointer;
-    }
-    .checkbox-item.active { background: rgba(40,100,180,0.25); border-color: rgba(80,160,240,0.4); color: #b0d0ee; }
-    .checkbox-item .check {
-      width: 16px; height: 16px; border-radius: 4px;
-      border: 2px solid #4a6a8a; display: flex; align-items: center; justify-content: center;
-      font-size: 10px;
-    }
-    .checkbox-item.active .check { background: #4a8ac8; border-color: #4a8ac8; }
-    .checkbox-item.active .check::after { content: '✓'; color: #fff; }
-    .photo-upload-btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 8px 16px; background: rgba(30,60,110,0.3);
-      border: 1px dashed rgba(60,120,200,0.3); border-radius: 6px;
-      color: #6a8aaa; cursor: pointer; font-size: 13px;
-    }
-    .photo-preview-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
-    .photo-preview { width: 60px; height: 60px; border-radius: 6px; object-fit: cover; }
-
-    .btn-primary {
-      width: 100%; padding: 14px;
-      background: linear-gradient(135deg, #1a4a7a, #0f2a4a);
-      border: 1px solid rgba(60,140,220,0.2); border-radius: 6px;
-      color: #c8dcee; font-size: 16px; font-weight: 500;
-      cursor: pointer; margin-top: 8px; transition: background 0.2s;
-    }
-    .btn-primary:active { background: linear-gradient(135deg, #1a5a8a, #0f2a5a); }
-
-    /* FINANCE */
-    .finance-container { display: flex; flex-direction: column; gap: 12px; }
-    .finance-tree {
-      background: rgba(10,25,50,0.5); border-radius: 6px;
-      padding: 12px; max-height: 200px; overflow-y: auto;
-      border: 1px solid rgba(40,80,130,0.15);
-    }
-    .finance-tree .folder {
-      padding: 6px 8px; cursor: pointer; border-radius: 6px;
-      font-size: 14px; display: flex; align-items: center; gap: 8px;
-    }
-    .finance-tree .folder:active { background: rgba(40,80,160,0.2); }
-    .finance-tree .folder.selected { background: rgba(40,80,160,0.25); color: #b0d0ee; }
-    .finance-tree .folder .arrow { font-size: 10px; transition: transform 0.2s; color: #4a6a8a; }
-    .finance-tree .folder .arrow.open { transform: rotate(90deg); }
-    .finance-tree .children { padding-left: 20px; }
-    .finance-items {
-      background: rgba(10,25,50,0.3); border-radius: 6px;
-      padding: 12px; overflow-y: auto; border: 1px solid rgba(40,80,130,0.1);
-      min-height: 80px;
-    }
-    .finance-items .item-row {
-      display: grid; grid-template-columns: 1fr 60px 60px 50px 40px; gap: 4px;
-      padding: 6px 4px; font-size: 12px;
-      border-bottom: 1px solid rgba(40,80,130,0.08); align-items: center;
-    }
-    .finance-items .item-row .name { color: #b0cce6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .finance-items .item-row .profit { color: #6ac88a; }
-    .finance-items .item-row .loss { color: #c87070; }
-    .finance-items .empty { color: #4a5a7a; text-align: center; padding: 20px; font-size: 13px; }
-    .finance-add { display: grid; grid-template-columns: 1fr 60px 60px; gap: 8px; margin-top: 8px; }
-    .finance-add input {
-      padding: 8px 10px; background: rgba(15,30,55,0.7);
-      border: 1px solid rgba(50,90,140,0.2); border-radius: 6px;
-      color: #d0d9e6; font-size: 13px; outline: none;
-    }
-    .finance-add .add-btn {
-      grid-column: 1 / -1; padding: 10px;
-      background: rgba(30,80,150,0.3); border: 1px solid rgba(60,120,200,0.2);
-      border-radius: 6px; color: #8ab4d6; font-size: 14px; cursor: pointer; text-align: center;
-    }
-
-    /* FESTIVALS */
-    .festival-card {
-      background: rgba(15,30,55,0.5); border-radius: 6px;
-      padding: 12px 14px; margin-bottom: 10px;
-      border: 1px solid rgba(40,80,130,0.12);
-      display: flex; justify-content: space-between; align-items: center; gap: 8px;
-    }
-    .festival-card .info { flex: 1; min-width: 0; }
-    .festival-card .info .name { font-size: 15px; color: #c8dcee; font-weight: 500; }
-    .festival-card .info .date { font-size: 12px; color: #5a7a9a; }
-    .festival-card .status {
-      font-size: 11px; padding: 4px 10px; border-radius: 20px;
-      background: rgba(40,80,130,0.2); color: #8aabca; white-space: nowrap; cursor: pointer;
-    }
-    .festival-card .delete-fest { background: none; border: none; color: #5a4a4a; font-size: 18px; cursor: pointer; }
-
-    /* CALENDAR */
-    .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 12px; }
-    .cal-grid .cal-header { text-align: center; font-size: 10px; color: #4a6a8a; padding: 4px 0; font-weight: 600; }
-    .cal-grid .cal-day {
-      aspect-ratio: 1; display: flex; align-items: center; justify-content: center;
-      border-radius: 50%; font-size: 14px; color: #8aabca; cursor: pointer;
-      background: transparent; border: none; font-family: inherit; position: relative;
-    }
-    .cal-grid .cal-day:active { background: rgba(40,80,160,0.2); }
-    .cal-grid .cal-day.has-event { color: #b0d0ee; font-weight: 500; }
-    .cal-grid .cal-day.has-event::after {
-      content: ''; position: absolute; bottom: 2px; width: 4px; height: 4px;
-      border-radius: 50%; background: #4a8ac8;
-    }
-    .cal-grid .cal-day.other-month { color: #2a3a5a; }
-    .cal-grid .cal-day.today { border: 1px solid rgba(80,160,240,0.3); }
-    .cal-events-list { max-height: 150px; overflow-y: auto; }
-    .cal-event-item {
-      display: flex; align-items: center; gap: 10px;
-      padding: 8px 10px; background: rgba(15,30,55,0.4);
-      border-radius: 6px; margin-bottom: 6px; font-size: 13px;
-    }
-    .cal-event-item .event-text { flex: 1; color: #b0cce6; }
-    .cal-event-item .event-check {
-      width: 20px; height: 20px; border-radius: 4px;
-      border: 2px solid #3a5a7a; display: flex; align-items: center; justify-content: center;
-      cursor: pointer; font-size: 12px;
-    }
-    .cal-event-item .event-check.done { background: #4a8ac8; border-color: #4a8ac8; }
-    .cal-event-item .event-check.done::after { content: '✓'; color: #fff; }
-    .cal-event-item .event-del { background: none; border: none; color: #5a4a4a; font-size: 16px; cursor: pointer; }
-
-    /* NOTES */
-    .notes-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-    .notes-grid .note-card {
-      background: rgba(15,30,55,0.5); border-radius: 6px;
-      padding: 12px; border: 1px solid rgba(40,80,130,0.1); min-height: 80px;
-    }
-    .notes-grid .note-card .note-label { font-size: 11px; color: #4a6a8a; margin-bottom: 6px; font-weight: 600; }
-    .notes-grid .note-card textarea {
-      width: 100%; background: transparent; border: none;
-      color: #b0cce6; font-size: 13px; outline: none; resize: none;
-      min-height: 50px; font-family: inherit; padding: 0;
-    }
-
-    /* SOCIAL */
-    .social-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 12px 14px; background: rgba(15,30,55,0.4);
-      border-radius: 6px; margin-bottom: 8px; border: 1px solid rgba(40,80,130,0.1);
-    }
-    .social-item .name { font-size: 15px; color: #b0cce6; }
-    .social-item .check-btn {
-      padding: 6px 16px; background: rgba(30,80,150,0.3);
-      border: 1px solid rgba(60,120,200,0.2); border-radius: 20px;
-      color: #8ab4d6; font-size: 12px; cursor: pointer;
-    }
-
-    /* GALLERY */
-    .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
-    .gallery-grid .gallery-item {
-      aspect-ratio: 1; border-radius: 6px; overflow: hidden;
-      background: rgba(20,45,80,0.3); border: 1px solid rgba(40,80,130,0.1);
-      position: relative;
-    }
-    .gallery-grid .gallery-item img { width: 100%; height: 100%; object-fit: cover; }
-    .gallery-grid .gallery-item .del-gallery {
-      position: absolute; top: 2px; right: 2px;
-      background: rgba(0,0,0,0.5); border: none; color: #c87070;
-      border-radius: 50%; width: 20px; height: 20px; font-size: 12px; cursor: pointer;
-    }
-
-    /* SETTINGS */
-    .settings-item {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 14px 0; border-bottom: 1px solid rgba(40,80,130,0.08);
-    }
-    .settings-item .label { color: #8aabca; font-size: 14px; }
-    .settings-item .value { color: #5a7a9a; font-size: 14px; }
-    .settings-item input {
-      background: rgba(15,30,55,0.7); border: 1px solid rgba(50,90,140,0.2);
-      border-radius: 6px; padding: 6px 12px; color: #d0d9e6;
-      font-size: 14px; width: 100px; text-align: center; outline: none;
-    }
-    .settings-item .save-btn {
-      padding: 6px 16px; background: rgba(30,80,150,0.3);
-      border: 1px solid rgba(60,120,200,0.2); border-radius: 6px;
-      color: #8ab4d6; font-size: 12px; cursor: pointer;
-    }
-
-    .text-muted { color: #4a5a7a; font-size: 13px; }
-    .text-center { text-align: center; }
+    body { font-family:-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif; background:#0a0e1a; color:#d0d9e6; min-height:100vh; }
+    .app-container { width:100%; min-height:100vh; background:radial-gradient(ellipse at 30% 20%, #0f1a2e, #080c18); }
+    .screen { display:none; width:100%; min-height:100vh; padding:20px 16px; }
+    .screen.active { display:flex; flex-direction:column; }
+    #pinScreen { justify-content:center; align-items:center; background:radial-gradient(ellipse at center, #0f1a2e, #050810); }
+    .pin-logo { font-size:42px; margin-bottom:8px; }
+    .pin-logo-text { font-size:22px; font-weight:300; color:#8ab4d6; letter-spacing:4px; margin-bottom:30px; }
+    .pin-dots { display:flex; gap:20px; margin-bottom:32px; }
+    .pin-dot { width:16px; height:16px; border-radius:50%; border:2px solid #3a5a7a; transition:0.2s; }
+    .pin-dot.filled { background:#6a9ac8; border-color:#6a9ac8; }
+    .pin-keypad { display:grid; grid-template-columns:repeat(3, 70px); gap:14px; margin-bottom:20px; }
+    .pin-key { width:70px; height:70px; border-radius:6px; border:1px solid rgba(60,100,150,0.3); background:rgba(20,40,70,0.5); color:#b0cce6; font-size:26px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+    .pin-key:active { background:rgba(60,120,200,0.3); }
+    .pin-key.empty { background:transparent; border:none; pointer-events:none; }
+    .mandala-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:10px; max-width:400px; margin:0 auto; }
+    .mandala-item { aspect-ratio:1; background:rgba(20,45,80,0.4); border-radius:6px; display:flex; flex-direction:column; align-items:center; justify-content:center; border:1px solid rgba(60,120,200,0.15); cursor:pointer; padding:8px; }
+    .mandala-item:active { background:rgba(40,80,140,0.3); }
+    .mandala-item .icon { font-size:28px; margin-bottom:4px; }
+    .mandala-item .label { font-size:11px; color:#7a9aba; font-weight:400; text-align:center; }
+    .mandala-center { grid-column:2; grid-row:2; aspect-ratio:1; background:radial-gradient(circle, #1a3a5a, #0f1a2e); border-radius:6px; display:flex; align-items:center; justify-content:center; font-size:36px; color:#8ab4d6; border:1px solid rgba(80,160,240,0.3); cursor:pointer; }
+    .mandala-center:active { background:rgba(60,150,255,0.2); }
+    .screen-header { display:flex; align-items:center; gap:12px; margin-bottom:16px; border-bottom:1px solid rgba(40,70,120,0.25); padding-bottom:12px; }
+    .screen-header .back-btn { background:none; border:none; color:#6a8aaa; font-size:28px; cursor:pointer; }
+    .screen-header .title { font-size:18px; font-weight:600; color:#c8dcee; }
+    .form-group { margin-bottom:16px; }
+    .form-group label { display:block; font-size:12px; color:#6a8aaa; margin-bottom:4px; }
+    .form-group input, .form-group textarea, .form-group select { width:100%; padding:12px; background:rgba(15,30,55,0.7); border:1px solid rgba(50,90,140,0.2); border-radius:6px; color:#d0d9e6; font-size:15px; outline:none; font-family:inherit; }
+    .form-group textarea { resize:vertical; min-height:70px; }
+    .checkbox-grid { display:flex; flex-wrap:wrap; gap:8px; }
+    .checkbox-item { display:flex; align-items:center; gap:6px; background:rgba(20,45,80,0.3); padding:6px 12px; border-radius:20px; border:1px solid rgba(50,90,140,0.15); font-size:13px; color:#8aabca; cursor:pointer; }
+    .checkbox-item.active { background:rgba(40,100,180,0.25); border-color:rgba(80,160,240,0.4); color:#b0d0ee; }
+    .checkbox-item .check { width:16px; height:16px; border-radius:4px; border:2px solid #4a6a8a; display:flex; align-items:center; justify-content:center; font-size:10px; }
+    .checkbox-item.active .check { background:#4a8ac8; border-color:#4a8ac8; }
+    .checkbox-item.active .check::after { content:'✓'; color:#fff; }
+    .photo-upload-btn { display:inline-flex; align-items:center; gap:8px; padding:8px 16px; background:rgba(30,60,110,0.3); border:1px dashed rgba(60,120,200,0.3); border-radius:6px; color:#6a8aaa; cursor:pointer; font-size:13px; }
+    .photo-preview-grid { display:flex; flex-wrap:wrap; gap:8px; margin-top:8px; }
+    .photo-preview { width:60px; height:60px; border-radius:6px; object-fit:cover; }
+    .btn-primary { width:100%; padding:14px; background:linear-gradient(135deg, #1a4a7a, #0f2a4a); border:1px solid rgba(60,140,220,0.2); border-radius:6px; color:#c8dcee; font-size:16px; font-weight:500; cursor:pointer; margin-top:8px; }
+    .btn-primary:active { background:linear-gradient(135deg, #1a5a8a, #0f2a5a); }
+    .finance-tree { background:rgba(10,25,50,0.5); border-radius:6px; padding:12px; max-height:200px; overflow-y:auto; border:1px solid rgba(40,80,130,0.15); }
+    .finance-tree .folder { padding:6px 8px; cursor:pointer; border-radius:6px; font-size:14px; display:flex; align-items:center; gap:8px; }
+    .finance-tree .folder:active { background:rgba(40,80,160,0.2); }
+    .finance-tree .folder.selected { background:rgba(40,80,160,0.25); color:#b0d0ee; }
+    .finance-tree .folder .arrow { font-size:10px; transition:transform 0.2s; color:#4a6a8a; }
+    .finance-tree .folder .arrow.open { transform:rotate(90deg); }
+    .finance-tree .children { padding-left:20px; display:none; }
+    .finance-tree .children.expanded { display:block; }
+    .finance-items { background:rgba(10,25,50,0.3); border-radius:6px; padding:12px; overflow-y:auto; border:1px solid rgba(40,80,130,0.1); min-height:80px; }
+    .finance-items .item-row { display:grid; grid-template-columns:1fr 60px 60px 50px 40px; gap:4px; padding:6px 4px; font-size:12px; border-bottom:1px solid rgba(40,80,130,0.08); align-items:center; }
+    .finance-items .item-row .name { color:#b0cce6; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .finance-items .item-row .profit { color:#6ac88a; }
+    .finance-items .item-row .loss { color:#c87070; }
+    .finance-items .empty { color:#4a5a7a; text-align:center; padding:20px; font-size:13px; }
+    .resource-row { display:flex; gap:4px; margin-bottom:4px; align-items:center; }
+    .resource-row input { flex:1; }
+    .festival-card { background:rgba(15,30,55,0.5); border-radius:6px; padding:12px 14px; margin-bottom:10px; border:1px solid rgba(40,80,130,0.12); display:flex; justify-content:space-between; align-items:center; gap:8px; }
+    .festival-card .info { flex:1; }
+    .festival-card .info .name { font-size:15px; color:#c8dcee; font-weight:500; }
+    .festival-card .info .date { font-size:12px; color:#5a7a9a; }
+    .festival-card .info .days-left { font-size:11px; color:#8aabca; }
+    .festival-card .status { font-size:11px; padding:4px 10px; border-radius:20px; background:rgba(40,80,130,0.2); color:#8aabca; white-space:nowrap; cursor:pointer; }
+    .festival-card .delete-fest { background:none; border:none; color:#5a4a4a; font-size:18px; cursor:pointer; }
+    .cal-grid { display:grid; grid-template-columns:repeat(7, 1fr); gap:4px; margin-bottom:12px; }
+    .cal-grid .cal-header { text-align:center; font-size:10px; color:#4a6a8a; padding:4px 0; font-weight:600; }
+    .cal-grid .cal-day { aspect-ratio:1; display:flex; align-items:center; justify-content:center; border-radius:50%; font-size:14px; color:#8aabca; cursor:pointer; background:transparent; border:none; font-family:inherit; position:relative; }
+    .cal-grid .cal-day:active { background:rgba(40,80,160,0.2); }
+    .cal-grid .cal-day.has-event { color:#b0d0ee; font-weight:500; }
+    .cal-grid .cal-day.has-event::after { content:''; position:absolute; bottom:2px; width:4px; height:4px; border-radius:50%; background:#4a8ac8; }
+    .cal-grid .cal-day.other-month { color:#2a3a5a; }
+    .cal-grid .cal-day.today { border:1px solid rgba(80,160,240,0.3); }
+    .cal-events-list { max-height:150px; overflow-y:auto; }
+    .cal-event-item { display:flex; align-items:center; gap:10px; padding:8px 10px; background:rgba(15,30,55,0.4); border-radius:6px; margin-bottom:6px; font-size:13px; cursor:pointer; }
+    .cal-event-item .event-text { flex:1; color:#b0cce6; }
+    .cal-event-item .event-check { width:20px; height:20px; border-radius:4px; border:2px solid #3a5a7a; display:flex; align-items:center; justify-content:center; font-size:12px; cursor:pointer; }
+    .cal-event-item .event-check.done { background:#4a8ac8; border-color:#4a8ac8; }
+    .cal-event-item .event-check.done::after { content:'✓'; color:#fff; }
+    .cal-event-item .event-del { background:none; border:none; color:#5a4a4a; font-size:16px; cursor:pointer; }
+    .checklist-panel { display:none; margin-top:8px; padding:8px; background:rgba(15,30,55,0.3); border-radius:4px; }
+    .checklist-panel.open { display:block; }
+    .checklist-panel input { width:100%; margin-bottom:4px; }
+    .notes-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .notes-grid .note-card { background:rgba(15,30,55,0.5); border-radius:6px; padding:12px; border:1px solid rgba(40,80,130,0.1); min-height:80px; }
+    .notes-grid .note-card .note-label { font-size:11px; color:#4a6a8a; margin-bottom:6px; font-weight:600; }
+    .notes-grid .note-card textarea { width:100%; background:transparent; border:none; color:#b0cce6; font-size:13px; outline:none; resize:none; min-height:50px; font-family:inherit; padding:0; }
+    .social-item { display:flex; justify-content:space-between; align-items:center; padding:12px 14px; background:rgba(15,30,55,0.4); border-radius:6px; margin-bottom:8px; border:1px solid rgba(40,80,130,0.1); }
+    .social-item .name { font-size:15px; color:#b0cce6; }
+    .social-item .check-btn { padding:6px 16px; background:rgba(30,80,150,0.3); border:1px solid rgba(60,120,200,0.2); border-radius:20px; color:#8ab4d6; font-size:12px; cursor:pointer; }
+    .gallery-grid { display:grid; grid-template-columns:repeat(3, 1fr); gap:6px; }
+    .gallery-grid .gallery-item { aspect-ratio:1; border-radius:6px; overflow:hidden; background:rgba(20,45,80,0.3); border:1px solid rgba(40,80,130,0.1); position:relative; }
+    .gallery-grid .gallery-item img { width:100%; height:100%; object-fit:cover; }
+    .gallery-grid .gallery-item .del-gallery { position:absolute; top:2px; right:2px; background:rgba(0,0,0,0.5); border:none; color:#c87070; border-radius:50%; width:20px; height:20px; font-size:12px; cursor:pointer; }
+    .settings-item { display:flex; justify-content:space-between; align-items:center; padding:14px 0; border-bottom:1px solid rgba(40,80,130,0.08); }
+    .settings-item .label { color:#8aabca; font-size:14px; }
+    .settings-item .value { color:#5a7a9a; font-size:14px; }
+    .settings-item input { background:rgba(15,30,55,0.7); border:1px solid rgba(50,90,140,0.2); border-radius:6px; padding:6px 12px; color:#d0d9e6; font-size:14px; width:100px; text-align:center; outline:none; }
+    .settings-item .save-btn { padding:6px 16px; background:rgba(30,80,150,0.3); border:1px solid rgba(60,120,200,0.2); border-radius:6px; color:#8ab4d6; font-size:12px; cursor:pointer; }
+    .text-muted { color:#4a5a7a; font-size:13px; }
+    .text-center { text-align:center; }
   </style>
 </head>
 <body>
@@ -319,18 +118,10 @@
       <div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div><div class="pin-dot"></div>
     </div>
     <div class="pin-keypad" id="pinKeypad">
-      <button class="pin-key" data-value="1">1</button>
-      <button class="pin-key" data-value="2">2</button>
-      <button class="pin-key" data-value="3">3</button>
-      <button class="pin-key" data-value="4">4</button>
-      <button class="pin-key" data-value="5">5</button>
-      <button class="pin-key" data-value="6">6</button>
-      <button class="pin-key" data-value="7">7</button>
-      <button class="pin-key" data-value="8">8</button>
-      <button class="pin-key" data-value="9">9</button>
-      <button class="pin-key empty"></button>
-      <button class="pin-key" data-value="0">0</button>
-      <button class="pin-key" data-value="del">⌫</button>
+      <button class="pin-key" data-value="1">1</button><button class="pin-key" data-value="2">2</button><button class="pin-key" data-value="3">3</button>
+      <button class="pin-key" data-value="4">4</button><button class="pin-key" data-value="5">5</button><button class="pin-key" data-value="6">6</button>
+      <button class="pin-key" data-value="7">7</button><button class="pin-key" data-value="8">8</button><button class="pin-key" data-value="9">9</button>
+      <button class="pin-key empty"></button><button class="pin-key" data-value="0">0</button><button class="pin-key" data-value="del">⌫</button>
     </div>
   </div>
 
@@ -359,6 +150,10 @@
     <div class="form-group"><label>Цена (₽)</label><input type="number" id="pubPrice" placeholder="1500"></div>
     <div class="form-group"><label>Хештеги (через запятую)</label><input type="text" id="pubTags" placeholder="ручнаяработа, бабочка, кожа"></div>
     <div class="form-group">
+      <label>Категория</label>
+      <select id="pubCategory"></select>
+    </div>
+    <div class="form-group">
       <label>Фотографии (до 8)</label>
       <div class="photo-upload-btn" id="photoUploadBtn">📷 Выбрать фото</div>
       <input type="file" id="photoInput" accept="image/*" multiple style="display:none">
@@ -386,33 +181,27 @@
       <button class="back-btn" data-back="mandalaScreen">‹</button>
       <div class="title">Финансы</div>
     </div>
-    <div class="finance-container">
-      <div class="finance-tree" id="financeTree"></div>
-      <div class="finance-items" id="financeItems"><div class="empty">Выберите категорию слева</div></div>
-      <div class="finance-add">
-        <input type="text" id="financeItemName" placeholder="Название">
-        <input type="number" id="financeItemCost" placeholder="Затраты">
-        <input type="number" id="financeItemProfit" placeholder="Прибыль">
-        <div class="add-btn" id="financeAddBtn">➕ Добавить изделие</div>
+    <div class="finance-tree" id="financeTree"></div>
+    <div class="finance-items" id="financeItems"><div class="empty">Выберите категорию слева</div></div>
+    <div id="financeAddPanel" style="margin-top:8px;">
+      <input type="text" id="financeItemName" placeholder="Название изделия">
+      <div id="resourceFields">
+        <div class="resource-row"><input type="text" placeholder="Ресурс" class="res-name"><input type="number" placeholder="Стоимость" class="res-cost"></div>
       </div>
+      <button class="btn-primary" id="addResourceRow">➕ Добавить ресурс</button>
+      <button class="btn-primary" id="financeAddBtn">➕ Добавить изделие</button>
     </div>
   </div>
 
   <!-- SOCIAL SCREEN -->
   <div class="screen" id="socialScreen">
-    <div class="screen-header">
-      <button class="back-btn" data-back="mandalaScreen">‹</button>
-      <div class="title">Мои соцсети</div>
-    </div>
+    <div class="screen-header"><button class="back-btn" data-back="mandalaScreen">‹</button><div class="title">Мои соцсети</div></div>
     <div id="socialList"></div>
   </div>
 
   <!-- FESTIVAL SCREEN -->
   <div class="screen" id="festivalScreen">
-    <div class="screen-header">
-      <button class="back-btn" data-back="mandalaScreen">‹</button>
-      <div class="title">Фестивали</div>
-    </div>
+    <div class="screen-header"><button class="back-btn" data-back="mandalaScreen">‹</button><div class="title">Фестивали</div></div>
     <div class="form-group">
       <label>Добавить фестиваль</label>
       <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -426,14 +215,11 @@
 
   <!-- CALENDAR SCREEN -->
   <div class="screen" id="calendarScreen">
-    <div class="screen-header">
-      <button class="back-btn" data-back="mandalaScreen">‹</button>
-      <div class="title">Календарь</div>
-    </div>
+    <div class="screen-header"><button class="back-btn" data-back="mandalaScreen">‹</button><div class="title">Календарь</div></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-      <button class="back-btn" id="calPrev" style="font-size:20px;">‹</button>
+      <button class="back-btn" id="calPrev" style="font-size:28px;">‹</button>
       <span id="calMonthYear" style="font-size:16px;color:#8ab4d6;"></span>
-      <button class="back-btn" id="calNext" style="font-size:20px;">›</button>
+      <button class="back-btn" id="calNext" style="font-size:28px;">›</button>
     </div>
     <div class="cal-grid" id="calGrid"></div>
     <div style="display:flex;gap:8px;margin-bottom:8px;">
@@ -441,37 +227,36 @@
       <button class="btn-primary" id="calEventAdd" style="width:auto;padding:8px 16px;margin:0;">➕</button>
     </div>
     <div class="cal-events-list" id="calEventsList"></div>
+    <div class="checklist-panel" id="checklistPanel">
+      <input type="text" id="checklistInput" placeholder="Новый пункт">
+      <button class="btn-primary" id="addChecklistItem">Добавить пункт</button>
+      <div id="checklistItems"></div>
+    </div>
   </div>
 
   <!-- NOTES SCREEN -->
   <div class="screen" id="notesScreen">
-    <div class="screen-header">
-      <button class="back-btn" data-back="mandalaScreen">‹</button>
-      <div class="title">Заметки</div>
-    </div>
+    <div class="screen-header"><button class="back-btn" data-back="mandalaScreen">‹</button><div class="title">Заметки</div></div>
     <div class="notes-grid" id="notesGrid">
-      <div class="note-card"><div class="note-label">Пн / Вт</div><textarea placeholder="Планы..." data-note="mon-tue"></textarea></div>
-      <div class="note-card"><div class="note-label">Ср / Чт</div><textarea placeholder="Планы..." data-note="wed-thu"></textarea></div>
-      <div class="note-card"><div class="note-label">Пт / Сб</div><textarea placeholder="Планы..." data-note="fri-sat"></textarea></div>
-      <div class="note-card"><div class="note-label">Вс</div><textarea placeholder="Планы..." data-note="sun"></textarea></div>
+      <div class="note-card"><div class="note-label">Пн</div><textarea placeholder="Планы на понедельник..." data-note="mon"></textarea></div>
+      <div class="note-card"><div class="note-label">Вт</div><textarea placeholder="Планы на вторник..." data-note="tue"></textarea></div>
+      <div class="note-card"><div class="note-label">Ср</div><textarea placeholder="Планы на среду..." data-note="wed"></textarea></div>
+      <div class="note-card"><div class="note-label">Чт</div><textarea placeholder="Планы на четверг..." data-note="thu"></textarea></div>
+      <div class="note-card"><div class="note-label">Пт</div><textarea placeholder="Планы на пятницу..." data-note="fri"></textarea></div>
+      <div class="note-card"><div class="note-label">Сб</div><textarea placeholder="Планы на субботу..." data-note="sat"></textarea></div>
+      <div class="note-card"><div class="note-label">Вс</div><textarea placeholder="Планы на воскресенье..." data-note="sun"></textarea></div>
     </div>
   </div>
 
   <!-- GALLERY SCREEN -->
   <div class="screen" id="galleryScreen">
-    <div class="screen-header">
-      <button class="back-btn" data-back="mandalaScreen">‹</button>
-      <div class="title">Галерея</div>
-    </div>
+    <div class="screen-header"><button class="back-btn" data-back="mandalaScreen">‹</button><div class="title">Галерея</div></div>
     <div class="gallery-grid" id="galleryGrid"></div>
   </div>
 
   <!-- SETTINGS SCREEN -->
   <div class="screen" id="settingsScreen">
-    <div class="screen-header">
-      <button class="back-btn" data-back="mandalaScreen">‹</button>
-      <div class="title">Настройки</div>
-    </div>
+    <div class="screen-header"><button class="back-btn" data-back="mandalaScreen">‹</button><div class="title">Настройки</div></div>
     <div class="settings-item">
       <span class="label">Пин-код</span>
       <div style="display:flex;gap:8px;align-items:center;">
@@ -479,7 +264,23 @@
         <button class="save-btn" id="settingsPinSave">Сохранить</button>
       </div>
     </div>
-    <div class="settings-item"><span class="label">Версия</span><span class="value">2.0 — Чеклисты живы</span></div>
+    <div class="settings-item">
+      <span class="label">Площадки</span>
+      <div style="display:flex;gap:4px;align-items:center;">
+        <input type="text" id="newPlatformName" placeholder="Название" style="width:80px;">
+        <input type="text" id="newPlatformUrl" placeholder="URL" style="width:120px;">
+        <button class="save-btn" id="addPlatformBtn">Добавить</button>
+      </div>
+    </div>
+    <div id="platformList" style="margin-top:8px;"></div>
+    <div class="settings-item">
+      <span class="label">Добавить категорию</span>
+      <div style="display:flex;gap:4px;">
+        <input type="text" id="newCategoryName" placeholder="Название категории">
+        <button class="save-btn" id="addCategoryBtn">Добавить</button>
+      </div>
+    </div>
+    <div class="settings-item"><span class="label">Версия</span><span class="value">3.0 — Чеклисты внутри событий</span></div>
     <div class="settings-item" style="border-bottom:none;"><span class="label">Данные</span><span class="value" id="dataSize">0 КБ</span></div>
   </div>
 </div>
@@ -491,20 +292,8 @@
     posts: [],
     finance: {
       tree: {
-        'Кожа': {
-          'Блокноты': { items: [] },
-          'Браслеты': { items: [] },
-          'Бабочки': { items: [] },
-          'Брелки': { items: [] },
-          'Подвески': { items: [] },
-          items: []
-        },
-        'Ресуначбки))0)': {
-          'Холстi': { items: [] },
-          'Ткани': { items: [] },
-          'Разновие))': { items: [] },
-          items: []
-        },
+        'Кожа': { items: [], 'Блокноты': { items: [] }, 'Браслеты': { items: [] }, 'Бабочки': { items: [] }, 'Брелки': { items: [] }, 'Подвески': { items: [] } },
+        'Ресуначбки))0)': { items: [], 'Холстi': { items: [] }, 'Ткани': { items: [] }, 'Разновие))': { items: [] } },
         'Пластинки': { items: [] },
         'Шкатулки': { items: [] },
         'Этнические штуки': { items: [] },
@@ -513,7 +302,7 @@
     },
     festivals: [],
     calendar: {},
-    notes: { 'mon-tue':'', 'wed-thu':'', 'fri-sat':'', 'sun':'' },
+    notes: { mon:'', tue:'', wed:'', thu:'', fri:'', sat:'', sun:'' },
     socialPlatforms: [
       { id:'vk', name:'ВКонтакте', url:'https://vk.com' },
       { id:'avito', name:'Авито', url:'https://www.avito.ru' },
@@ -527,78 +316,71 @@
     gallery: []
   };
 
-  // ==================== STORAGE ====================
   function saveData() { localStorage.setItem('elfData', JSON.stringify(DATA)); updateDataSize(); }
   function loadData() {
-    try {
-      const raw = localStorage.getItem('elfData');
-      if (raw) Object.assign(DATA, JSON.parse(raw));
-    } catch(e) {}
+    try { const raw = localStorage.getItem('elfData'); if (raw) Object.assign(DATA, JSON.parse(raw)); } catch(e) {}
   }
   function updateDataSize() {
     const size = new Blob([localStorage.getItem('elfData')||'']).size;
-    const el = document.getElementById('dataSize');
-    if (el) el.textContent = (size/1024).toFixed(1) + ' КБ';
+    const el = document.getElementById('dataSize'); if (el) el.textContent = (size/1024).toFixed(1) + ' КБ';
   }
 
-  // ==================== NAVIGATION ====================
   let currentScreen = 'pinScreen';
   function showScreen(id) {
     document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
     const target = document.getElementById(id);
     if (target) { target.classList.add('active'); currentScreen = id; }
-    // refresh content on show
     if (id === 'financeScreen') renderFinance();
     if (id === 'socialScreen') renderSocial();
     if (id === 'festivalScreen') renderFestivals();
     if (id === 'calendarScreen') renderCalendar();
     if (id === 'galleryScreen') renderGallery();
     if (id === 'notesScreen') renderNotes();
-    if (id === 'settingsScreen') updateDataSize();
+    if (id === 'publishScreen') renderPublishCategories();
+    if (id === 'settingsScreen') { updateDataSize(); renderPlatformList(); }
   }
-  document.querySelectorAll('[data-back]').forEach(btn => {
-    btn.addEventListener('click', () => showScreen(btn.dataset.back));
-  });
-  document.querySelectorAll('.mandala-item').forEach(item => {
-    item.addEventListener('click', () => showScreen(item.dataset.screen));
-  });
+  document.querySelectorAll('[data-back]').forEach(btn => btn.addEventListener('click', () => showScreen(btn.dataset.back)));
+  document.querySelectorAll('.mandala-item').forEach(item => item.addEventListener('click', () => showScreen(item.dataset.screen)));
   document.getElementById('goPublish').addEventListener('click', () => showScreen('publishScreen'));
 
-  // ==================== PIN ====================
+  // PIN
   let pinBuffer = '';
   const dots = document.querySelectorAll('.pin-dot');
-  const pinScreen = document.getElementById('pinScreen');
   function updateDots() { dots.forEach((d,i) => d.classList.toggle('filled', i < pinBuffer.length)); }
   function handlePinInput(val) {
     if (val === 'del') { pinBuffer = pinBuffer.slice(0,-1); updateDots(); return; }
     if (pinBuffer.length >= 4) return;
     pinBuffer += val; updateDots();
     if (pinBuffer.length === 4) {
-      if (pinBuffer === DATA.pin) {
-        pinBuffer = ''; updateDots();
-        showScreen('mandalaScreen');
-      } else {
-        alert('Неверный пин');
-        pinBuffer = ''; updateDots();
-      }
+      if (pinBuffer === DATA.pin) { pinBuffer = ''; updateDots(); showScreen('mandalaScreen'); }
+      else { alert('Неверный пин'); pinBuffer = ''; updateDots(); }
     }
   }
-  document.querySelectorAll('.pin-key[data-value]').forEach(b => {
-    b.addEventListener('click', () => handlePinInput(b.dataset.value));
-  });
+  document.querySelectorAll('.pin-key[data-value]').forEach(b => b.addEventListener('click', () => handlePinInput(b.dataset.value)));
 
-  // ==================== PUBLISH ====================
+  // PUBLISH
   let selectedPhotos = [];
+  function renderPublishCategories() {
+    const select = document.getElementById('pubCategory');
+    select.innerHTML = '<option value="">Без категории</option>';
+    function addOptions(node, prefix = '') {
+      Object.keys(node).forEach(key => {
+        if (key !== 'items') {
+          const display = prefix + key;
+          select.innerHTML += `<option value="${display}">${display}</option>`;
+          if (node[key] && typeof node[key] === 'object') addOptions(node[key], display + ' → ');
+        }
+      });
+    }
+    addOptions(DATA.finance.tree);
+  }
   document.getElementById('photoUploadBtn').addEventListener('click', () => document.getElementById('photoInput').click());
   document.getElementById('photoInput').addEventListener('change', function(e) {
     const files = Array.from(e.target.files);
     for (const file of files) {
       if (selectedPhotos.length >= 8) break;
       const reader = new FileReader();
-      reader.onload = ev => {
-        selectedPhotos.push(ev.target.result);
-        renderPhotoPreviews();
-      };
+      reader.onload = ev => { selectedPhotos.push(ev.target.result); renderPhotoPreviews(); };
       reader.readAsDataURL(file);
     }
     e.target.value = '';
@@ -607,25 +389,30 @@
     const grid = document.getElementById('photoPreviewGrid');
     grid.innerHTML = '';
     selectedPhotos.forEach((src,i) => {
-      const img = document.createElement('img');
-      img.className = 'photo-preview'; img.src = src;
+      const img = document.createElement('img'); img.className = 'photo-preview'; img.src = src;
       img.addEventListener('click', () => { selectedPhotos.splice(i,1); renderPhotoPreviews(); });
       grid.appendChild(img);
     });
   }
-  document.querySelectorAll('#platformGrid .checkbox-item').forEach(el => {
-    el.addEventListener('click', () => el.classList.toggle('active'));
-  });
-
+  document.querySelectorAll('#platformGrid .checkbox-item').forEach(el => el.addEventListener('click', () => el.classList.toggle('active')));
   document.getElementById('startPublishBtn').addEventListener('click', async () => {
     const title = document.getElementById('pubTitle').value.trim() || 'Без названия';
     const desc = document.getElementById('pubDesc').value.trim();
     const price = document.getElementById('pubPrice').value || '0';
     const tags = document.getElementById('pubTags').value.trim();
+    const category = document.getElementById('pubCategory').value;
     const platforms = [...document.querySelectorAll('#platformGrid .checkbox-item.active')].map(e => e.dataset.platform);
     if (selectedPhotos.length === 0) return alert('Добавьте фото');
-    DATA.posts.push({ id:Date.now(), title, desc, price, tags, photos:[...selectedPhotos], platforms, date:new Date().toISOString() });
-    DATA.gallery.push(...selectedPhotos);
+    DATA.posts.push({ id:Date.now(), title, desc, price, tags, photos:[...selectedPhotos], platforms, category, date:new Date().toISOString() });
+    DATA.gallery = [...new Set([...DATA.gallery, ...selectedPhotos])]; // уникальные фото
+    if (category) {
+      const path = category.split(' → ');
+      let node = DATA.finance.tree;
+      for (const p of path) { if (node[p]) node = node[p]; else break; }
+      if (node && node.items) {
+        node.items.push({ name: title, cost: 0, profit: parseInt(price) || 0 });
+      }
+    }
     saveData();
     const text = `${title}\n${desc}\nЦена: ${price}₽\n#${tags.replace(/,/g, ' #')}`;
     try { await navigator.clipboard.writeText(text); } catch(e) {
@@ -641,7 +428,7 @@
     selectedPhotos = []; renderPhotoPreviews();
   });
 
-  // ==================== FINANCE ====================
+  // FINANCE
   let selectedFinancePath = [];
   function getNode(path) { let n = DATA.finance.tree; for (const k of path) { if (n[k]) n = n[k]; else return null; } return n; }
   function renderFinance() {
@@ -650,18 +437,20 @@
     function renderNode(node, path) {
       const keys = Object.keys(node).filter(k => k !== 'items');
       keys.forEach(key => {
-        const isSel = path.concat(key).join('/') === selectedFinancePath.join('/');
+        const isExpanded = true; // всегда раскрыты
         const folder = document.createElement('div');
-        folder.className = 'folder' + (isSel ? ' selected' : '');
-        folder.innerHTML = `<span class="arrow ${isSel?'open':''}">▶</span> ${key}`;
-        folder.addEventListener('click', (e) => { e.stopPropagation(); selectedFinancePath = [...path, key]; renderFinance(); });
+        folder.className = 'folder' + (selectedFinancePath.join('/') === path.concat(key).join('/') ? ' selected' : '');
+        folder.innerHTML = `<span class="arrow ${isExpanded?'open':''}">▶</span> ${key}`;
+        folder.addEventListener('click', (e) => {
+          e.stopPropagation();
+          selectedFinancePath = [...path, key];
+          renderFinance();
+        });
         tree.appendChild(folder);
-        if (isSel) {
-          const children = document.createElement('div'); children.className='children';
-          const subNode = getNode([...path, key]);
-          if (subNode) renderNode(subNode, [...path, key]);
-          tree.appendChild(children);
-        }
+        const children = document.createElement('div'); children.className = 'children expanded';
+        const subNode = node[key];
+        if (subNode && typeof subNode === 'object') renderNode(subNode, [...path, key]);
+        tree.appendChild(children);
       });
     }
     renderNode(DATA.finance.tree, []);
@@ -682,49 +471,50 @@
     container.querySelectorAll('[data-del]').forEach(el => el.addEventListener('click', () => {
       const name = el.dataset.del;
       const node2 = getNode(selectedFinancePath);
-      if (node2 && node2.items) {
-        const idx = node2.items.findIndex(i => i.name === name);
-        if (idx > -1) { node2.items.splice(idx,1); saveData(); renderFinanceItems(); }
-      }
+      if (node2?.items) { const idx = node2.items.findIndex(i => i.name === name); if (idx > -1) { node2.items.splice(idx,1); saveData(); renderFinanceItems(); } }
     }));
   }
+  document.getElementById('addResourceRow').addEventListener('click', () => {
+    const div = document.createElement('div'); div.className = 'resource-row';
+    div.innerHTML = '<input type="text" placeholder="Ресурс" class="res-name"><input type="number" placeholder="Стоимость" class="res-cost">';
+    document.getElementById('resourceFields').appendChild(div);
+  });
   document.getElementById('financeAddBtn').addEventListener('click', () => {
     const name = document.getElementById('financeItemName').value.trim();
-    const cost = parseInt(document.getElementById('financeItemCost').value) || 0;
-    const profit = parseInt(document.getElementById('financeItemProfit').value) || 0;
     if (!name) return alert('Введите название');
     const node = getNode(selectedFinancePath);
     if (!node) return alert('Выберите категорию');
     if (!node.items) node.items = [];
-    node.items.push({ name, cost, profit });
+    const costs = [...document.querySelectorAll('.res-cost')].map(i => parseFloat(i.value) || 0);
+    const totalCost = costs.reduce((a,b) => a+b, 0);
+    const profit = parseInt(document.getElementById('financeItemProfit')?.value) || 0;
+    node.items.push({ name, cost: totalCost, profit, resources: costs });
     document.getElementById('financeItemName').value = '';
-    document.getElementById('financeItemCost').value = '';
-    document.getElementById('financeItemProfit').value = '';
+    document.getElementById('resourceFields').innerHTML = '<div class="resource-row"><input type="text" placeholder="Ресурс" class="res-name"><input type="number" placeholder="Стоимость" class="res-cost"></div>';
     saveData(); renderFinanceItems();
   });
 
-  // ==================== SOCIAL ====================
+  // SOCIAL
   function renderSocial() {
     const list = document.getElementById('socialList');
-    list.innerHTML = DATA.socialPlatforms.map(p => `
-      <div class="social-item">
-        <span class="name">${p.name}</span>
-        <button class="check-btn" data-url="${p.url}">Проверить</button>
-      </div>`).join('');
+    list.innerHTML = DATA.socialPlatforms.map(p => `<div class="social-item"><span class="name">${p.name}</span><button class="check-btn" data-url="${p.url}">Проверить</button></div>`).join('');
     list.querySelectorAll('.check-btn').forEach(b => b.addEventListener('click', () => window.open(b.dataset.url, '_blank')));
   }
 
-  // ==================== FESTIVALS ====================
+  // FESTIVALS
   const FEST_STATUSES = ['Планирую','Заявка отправлена','Участвую','Отказ'];
   function renderFestivals() {
     const list = document.getElementById('festivalList');
     if (!DATA.festivals.length) { list.innerHTML = '<div class="text-muted text-center" style="padding:20px;">Нет фестивалей</div>'; return; }
-    list.innerHTML = DATA.festivals.map((f,i) => `
-      <div class="festival-card">
-        <div class="info"><div class="name">${f.name}</div><div class="date">${f.date||'—'}</div></div>
+    list.innerHTML = DATA.festivals.map((f,i) => {
+      const days = f.date ? Math.ceil((new Date(f.date) - new Date()) / 86400000) : null;
+      const daysText = days === null ? '' : days === 0 ? 'Сегодня' : days === 1 ? 'Завтра' : `Через ${days} дн.`;
+      return `<div class="festival-card">
+        <div class="info"><div class="name">${f.name}</div><div class="date">${f.date||'—'}</div><div class="days-left">${daysText}</div></div>
         <span class="status" data-idx="${i}">${f.status}</span>
         <button class="delete-fest" data-idx="${i}">✕</button>
-      </div>`).join('');
+      </div>`;
+    }).join('');
     list.querySelectorAll('.status').forEach(el => el.addEventListener('click', () => {
       const i = +el.dataset.idx;
       DATA.festivals[i].status = FEST_STATUSES[(FEST_STATUSES.indexOf(DATA.festivals[i].status)+1)%FEST_STATUSES.length];
@@ -743,21 +533,17 @@
     saveData(); renderFestivals();
   });
 
-  // ==================== CALENDAR ====================
-  let calYear = new Date().getFullYear(), calMonth = new Date().getMonth(), calSelectedDate = null;
+  // CALENDAR
+  let calYear = new Date().getFullYear(), calMonth = new Date().getMonth(), calSelectedDate = null, currentEventIdx = null;
   function renderCalendar() {
-    const grid = document.getElementById('calGrid');
     document.getElementById('calMonthYear').textContent = new Date(calYear, calMonth).toLocaleDateString('ru',{month:'long',year:'numeric'});
+    const grid = document.getElementById('calGrid');
     grid.innerHTML = '';
-    ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => {
-      const div = document.createElement('div'); div.className='cal-header'; div.textContent=d; grid.appendChild(div);
-    });
+    ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].forEach(d => { const div = document.createElement('div'); div.className='cal-header'; div.textContent=d; grid.appendChild(div); });
     const firstDay = new Date(calYear, calMonth, 1).getDay();
     const startOffset = firstDay === 0 ? 6 : firstDay - 1;
     const daysInPrev = new Date(calYear, calMonth, 0).getDate();
-    for (let i=startOffset; i>0; i--) {
-      const div = document.createElement('div'); div.className='cal-day other-month'; div.textContent = daysInPrev - i + 1; grid.appendChild(div);
-    }
+    for (let i=startOffset; i>0; i--) { const div = document.createElement('div'); div.className='cal-day other-month'; div.textContent = daysInPrev - i + 1; grid.appendChild(div); }
     const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
     const today = new Date();
     const todayStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
@@ -772,33 +558,70 @@
       grid.appendChild(btn);
     }
     const total = grid.children.length;
-    for (let i=1; i<=42-total; i++) {
-      const div = document.createElement('div'); div.className='cal-day other-month'; div.textContent = i; grid.appendChild(div);
-    }
+    for (let i=1; i<=42-total; i++) { const div = document.createElement('div'); div.className='cal-day other-month'; div.textContent = i; grid.appendChild(div); }
     renderCalendarEvents();
   }
   function renderCalendarEvents() {
     const list = document.getElementById('calEventsList');
     if (!calSelectedDate || !DATA.calendar[calSelectedDate]?.length) {
-      list.innerHTML = '<div class="text-muted text-center" style="padding:8px;">Нет событий на этот день</div>'; return;
+      list.innerHTML = '<div class="text-muted text-center" style="padding:8px;">Нет событий на этот день</div>';
+      document.getElementById('checklistPanel').classList.remove('open');
+      return;
     }
     list.innerHTML = DATA.calendar[calSelectedDate].map((ev,i) => `
-      <div class="cal-event-item">
-        <span class="event-check ${ev.checked?'done':''}" data-idx="${i}"></span>
+      <div class="cal-event-item" data-idx="${i}">
+        <span class="event-check ${ev.checked?'done':''}"></span>
         <span class="event-text">${ev.text}</span>
-        <button class="event-del" data-idx="${i}">✕</button>
+        <button class="event-del">✕</button>
       </div>`).join('');
-    list.querySelectorAll('.event-check').forEach(el => el.addEventListener('click', () => {
-      const i = +el.dataset.idx;
-      DATA.calendar[calSelectedDate][i].checked = !DATA.calendar[calSelectedDate][i].checked;
-      saveData(); renderCalendarEvents(); renderCalendar();
-    }));
-    list.querySelectorAll('.event-del').forEach(el => el.addEventListener('click', () => {
-      DATA.calendar[calSelectedDate].splice(+el.dataset.idx,1);
-      if (!DATA.calendar[calSelectedDate].length) delete DATA.calendar[calSelectedDate];
-      saveData(); renderCalendarEvents(); renderCalendar();
-    }));
+    list.querySelectorAll('.cal-event-item').forEach(item => {
+      const idx = +item.dataset.idx;
+      item.addEventListener('click', (e) => {
+        if (e.target.classList.contains('event-del')) return;
+        currentEventIdx = idx;
+        document.getElementById('checklistPanel').classList.add('open');
+        renderChecklist();
+      });
+      item.querySelector('.event-check').addEventListener('click', (e) => {
+        e.stopPropagation();
+        DATA.calendar[calSelectedDate][idx].checked = !DATA.calendar[calSelectedDate][idx].checked;
+        saveData(); renderCalendarEvents();
+      });
+      item.querySelector('.event-del').addEventListener('click', (e) => {
+        e.stopPropagation();
+        DATA.calendar[calSelectedDate].splice(idx,1);
+        if (!DATA.calendar[calSelectedDate].length) delete DATA.calendar[calSelectedDate];
+        saveData(); renderCalendarEvents();
+      });
+    });
   }
+  function renderChecklist() {
+    const ev = DATA.calendar[calSelectedDate]?.[currentEventIdx];
+    if (!ev) return;
+    const items = document.getElementById('checklistItems');
+    if (!ev.checklist) ev.checklist = [];
+    items.innerHTML = ev.checklist.map((item, i) => `
+      <div><input type="checkbox" ${item.done?'checked':''} data-idx="${i}"> ${item.text}</div>
+    `).join('');
+    items.querySelectorAll('input').forEach(cb => {
+      cb.addEventListener('change', function() {
+        ev.checklist[this.dataset.idx].done = this.checked;
+        saveData();
+      });
+    });
+  }
+  document.getElementById('addChecklistItem').addEventListener('click', () => {
+    const input = document.getElementById('checklistInput');
+    const text = input.value.trim();
+    if (!text || currentEventIdx === null) return;
+    const ev = DATA.calendar[calSelectedDate]?.[currentEventIdx];
+    if (!ev) return;
+    if (!ev.checklist) ev.checklist = [];
+    ev.checklist.push({ text, done: false });
+    input.value = '';
+    saveData();
+    renderChecklist();
+  });
   document.getElementById('calEventAdd').addEventListener('click', () => {
     const text = document.getElementById('calEventInput').value.trim();
     if (!text) return;
@@ -807,48 +630,68 @@
       calSelectedDate = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
     }
     if (!DATA.calendar[calSelectedDate]) DATA.calendar[calSelectedDate] = [];
-    DATA.calendar[calSelectedDate].push({ text, checked: false });
+    DATA.calendar[calSelectedDate].push({ text, checked: false, checklist: [] });
     document.getElementById('calEventInput').value = '';
     saveData(); renderCalendarEvents(); renderCalendar();
   });
   document.getElementById('calPrev').addEventListener('click', () => { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); });
   document.getElementById('calNext').addEventListener('click', () => { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); });
 
-  // ==================== NOTES ====================
+  // NOTES
   function renderNotes() {
     document.querySelectorAll('#notesGrid textarea').forEach(ta => {
       ta.value = DATA.notes[ta.dataset.note] || '';
     });
   }
   document.getElementById('notesGrid').addEventListener('input', (e) => {
-    if (e.target.tagName === 'TEXTAREA') {
-      DATA.notes[e.target.dataset.note] = e.target.value;
-      saveData();
-    }
+    if (e.target.tagName === 'TEXTAREA') { DATA.notes[e.target.dataset.note] = e.target.value; saveData(); }
   });
 
-  // ==================== GALLERY ====================
+  // GALLERY
   function renderGallery() {
     const grid = document.getElementById('galleryGrid');
     if (!DATA.gallery.length) { grid.innerHTML = '<div class="text-muted text-center" style="grid-column:1/-1;padding:30px;">Галерея пуста</div>'; return; }
     grid.innerHTML = DATA.gallery.map((src,i) => `
-      <div class="gallery-item">
-        <img src="${src}" alt="Работа">
-        <button class="del-gallery" data-idx="${i}">✕</button>
-      </div>`).join('');
+      <div class="gallery-item"><img src="${src}" alt="Работа"><button class="del-gallery" data-idx="${i}">✕</button></div>
+    `).join('');
     grid.querySelectorAll('.del-gallery').forEach(el => el.addEventListener('click', () => {
       DATA.gallery.splice(+el.dataset.idx,1); saveData(); renderGallery();
     }));
   }
 
-  // ==================== SETTINGS ====================
+  // SETTINGS
+  function renderPlatformList() {
+    const list = document.getElementById('platformList');
+    list.innerHTML = DATA.socialPlatforms.map((p,i) => `<div>${p.name} (${p.url}) <button data-idx="${i}" class="save-btn" style="margin-left:8px;">Удалить</button></div>`).join('');
+    list.querySelectorAll('button').forEach(b => b.addEventListener('click', () => {
+      DATA.socialPlatforms.splice(+b.dataset.idx,1); saveData(); renderPlatformList();
+    }));
+  }
+  document.getElementById('addPlatformBtn').addEventListener('click', () => {
+    const name = document.getElementById('newPlatformName').value.trim();
+    const url = document.getElementById('newPlatformUrl').value.trim();
+    if (name && url) {
+      DATA.socialPlatforms.push({ id: Date.now().toString(), name, url });
+      document.getElementById('newPlatformName').value = ''; document.getElementById('newPlatformUrl').value = '';
+      saveData(); renderPlatformList();
+    }
+  });
+  document.getElementById('addCategoryBtn').addEventListener('click', () => {
+    const name = document.getElementById('newCategoryName').value.trim();
+    if (name && !DATA.finance.tree[name]) {
+      DATA.finance.tree[name] = { items: [] };
+      document.getElementById('newCategoryName').value = '';
+      saveData(); renderFinance(); // обновить дерево в финансах при следующем открытии
+      alert('Категория добавлена');
+    }
+  });
   document.getElementById('settingsPinSave').addEventListener('click', () => {
     const val = document.getElementById('settingsPin').value.trim();
     if (val.length===4 && /^\d{4}$/.test(val)) { DATA.pin = val; saveData(); alert('Пин-код обновлён!'); document.getElementById('settingsPin').value = ''; }
     else alert('Пин должен быть 4 цифры');
   });
 
-  // ==================== INIT ====================
+  // INIT
   loadData();
   updateDataSize();
   showScreen('pinScreen');
